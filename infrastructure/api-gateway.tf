@@ -11,26 +11,33 @@ resource "aws_api_gateway_resource" "base_api_resource" {
   rest_api_id = aws_api_gateway_rest_api.mangum_api.id
 }
 
+# Methods that need permissions
+locals {
+  http_methods = ["GET", "POST"]
+}
+
 #################################################
 # API Endpoints Integration
 #################################################
-resource "aws_api_gateway_resource" "api_get" {
+resource "aws_api_gateway_resource" "api_resource" {
   parent_id   = aws_api_gateway_resource.base_api_resource.id
   path_part   = "{proxy+}"
   rest_api_id = aws_api_gateway_rest_api.mangum_api.id
 }
 
-resource "aws_api_gateway_method" "api_get" {
-  resource_id   = aws_api_gateway_resource.api_get.id
+resource "aws_api_gateway_method" "api" {
+  count         = length(local.http_methods)
+  resource_id   = aws_api_gateway_resource.api_resource.id
   rest_api_id   = aws_api_gateway_rest_api.mangum_api.id
-  http_method   = "GET"
+  http_method   = local.http_methods[count.index]
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "api_get_integration" {
+resource "aws_api_gateway_integration" "api_integration" {
+  count                   = length(local.http_methods)
   rest_api_id             = aws_api_gateway_rest_api.mangum_api.id
-  resource_id             = aws_api_gateway_resource.api_get.id
-  http_method             = aws_api_gateway_method.api_get.http_method
+  resource_id             = aws_api_gateway_resource.api_resource.id
+  http_method             = aws_api_gateway_method.api[count.index].http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.mangum_func.invoke_arn
@@ -83,8 +90,8 @@ resource "aws_api_gateway_deployment" "lambda_deploy" {
   }
 
   depends_on = [
-    aws_api_gateway_integration.api_get_integration,
-    aws_api_gateway_integration.doc_get_integration
+    aws_api_gateway_integration.api_integration,
+    aws_api_gateway_integration.doc_get_integration,
   ]
 }
 
@@ -94,9 +101,10 @@ resource "aws_api_gateway_stage" "deploy_stage" {
   stage_name    = var.stage_name
 }
 
-resource "aws_lambda_permission" "api_invoke_permission" {
+resource "aws_lambda_permission" "api_gw_invoke" {
+  count         = length(local.http_methods)
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.mangum_func.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.mangum_api.execution_arn}/*/GET/*"
+  source_arn    = "${aws_api_gateway_rest_api.mangum_api.execution_arn}/*/${local.http_methods[count.index]}/*"
 }
