@@ -10,3 +10,11 @@ output "rest_api_id" {
 output "invoke_url" {
   value = aws_api_gateway_deployment.lambda_deploy.invoke_url
 }
+
+output "docs_url" {
+  value = format(
+          "%s%s/api-docs/docs",
+          aws_api_gateway_deployment.lambda_deploy.invoke_url,
+          var.stage_name
+  )
+}

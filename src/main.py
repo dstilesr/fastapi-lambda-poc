@@ -6,8 +6,8 @@ from api.v1 import router
 
 app = FastAPI(
     title="Mangum Example App",
-    docs_url="/docs",
-    openapi_prefix="/dev"
+    docs_url="/api-docs/docs",
+    openapi_prefix="/dev/api-docs"
 )
 
 app.include_router(router, prefix="/api")
