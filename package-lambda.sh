@@ -9,4 +9,5 @@ pip install -r requirements.txt --target lambda-src --no-cache-dir
 
 cd lambda-src \
     && zip ../lambda-src.zip -r . \
+    && cd .. \
     && rm -r lambda-src
