@@ -30,6 +30,12 @@ resource "aws_lambda_function" "mangum_func" {
   source_code_hash = filebase64sha256(local.function_file)
   memory_size      = var.lambda_memory
   handler          = "main.lambda_handler"
+
+  environment {
+    variables = {
+      STAGE_NAME = var.stage_name
+    }
+  }
 }
 
 resource "aws_iam_policy" "write_logs" {
