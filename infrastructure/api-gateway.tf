@@ -1,6 +1,6 @@
 
 resource "aws_api_gateway_rest_api" "mangum_api" {
-  name = "MangumExampleAPI"
+  name        = "MangumExampleAPI"
   description = "Example API to try Mangum + FastAPI!"
 }
 
@@ -11,9 +11,9 @@ resource "aws_api_gateway_resource" "api_endpoints_resource" {
 }
 
 resource "aws_api_gateway_method" "get_method" {
-  resource_id = aws_api_gateway_resource.api_endpoints_resource.id
-  rest_api_id = aws_api_gateway_rest_api.mangum_api.id
-  http_method = "GET"
+  resource_id   = aws_api_gateway_resource.api_endpoints_resource.id
+  rest_api_id   = aws_api_gateway_rest_api.mangum_api.id
+  http_method   = "GET"
   authorization = "NONE"
 }
 
