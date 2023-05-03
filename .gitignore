@@ -166,3 +166,4 @@ lambda-src.zip
 # Terraform
 **/.terraform/
 **/.terraform.lock.hcl
+**/terraform.tfstate*
