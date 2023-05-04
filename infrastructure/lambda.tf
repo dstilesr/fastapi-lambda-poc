@@ -1,6 +1,15 @@
 
 locals {
   function_file = "../lambda-src.zip"
+  layer_file    = "../layer-src.zip"
+}
+
+resource "aws_lambda_layer_version" "libs_layer" {
+  layer_name          = "mangum-app-libraries"
+  description         = "Contains the Python libraries required for the app. See requirements.txt file for details."
+  compatible_runtimes = ["python3.9"]
+  filename            = local.layer_file
+  source_code_hash    = filebase64sha256(local.layer_file)
 }
 
 resource "aws_lambda_function" "mangum_func" {
@@ -18,4 +27,6 @@ resource "aws_lambda_function" "mangum_func" {
       STAGE_NAME = var.stage_name
     }
   }
+
+  layers = [aws_lambda_layer_version.libs_layer.arn]
 }
