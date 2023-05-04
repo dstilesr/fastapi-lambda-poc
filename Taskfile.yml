@@ -1,5 +1,13 @@
 version: 3
 tasks:
+  terraform-init:
+    desc: Initialize Terraform.
+    dir: infrastructure
+    sources:
+      - main.tf
+    cmds:
+      - terraform init
+
   package-lambda:
     desc: Package lambda zip file for deployment.
     sources:
@@ -19,6 +27,7 @@ tasks:
     desc: Deploy the function to AWS Lambda + API Gateway.
     dir: infrastructure
     deps:
+      - terraform-init
       - package-lambda
     cmds:
       - terraform validate

@@ -168,4 +168,7 @@ lambda-src.zip
 **/.terraform.lock.hcl
 **/terraform.tfstate*
 
+# Task
+**/.task/
+
 Tests.ipynb
