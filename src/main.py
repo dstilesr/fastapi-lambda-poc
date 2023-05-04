@@ -9,7 +9,8 @@ app = FastAPI(
     title="Mangum Example App",
     docs_url="/api-docs/docs",
     openapi_url="/api-docs/openapi.json",
-    root_path="/%s" % os.getenv("STAGE_NAME", "")
+    root_path="/%s" % os.getenv("STAGE_NAME", ""),
+    redoc_url=None
 )
 
 app.include_router(router, prefix="/api")
