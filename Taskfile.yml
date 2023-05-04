@@ -1,0 +1,31 @@
+version: 3
+tasks:
+  package-lambda:
+    desc: Package lambda zip file for deployment.
+    sources:
+      - requirements.txt
+      - src/**/*.py
+    cmds:
+      - rm -f lambda-src.zip
+      - cp -R src lambda-src
+      - pip install -r requirements.txt --target lambda-src --no-cache-dir
+      - |
+        cd lambda-src \
+            && zip ../lambda-src.zip -r . \
+            && cd .. \
+            && rm -r lambda-src
+
+  deploy:
+    desc: Deploy the function to AWS Lambda + API Gateway.
+    dir: infrastructure
+    deps:
+      - package-lambda
+    cmds:
+      - terraform validate
+      - terraform apply -auto-approve -input=false
+
+  take-down:
+    desc: Take down the infrastructure from AWS.
+    dir: infrastructure
+    cmds:
+      - terraform destroy -auto-approve -input=false
