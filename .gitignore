@@ -162,6 +162,8 @@ cython_debug/
 # Package for lambda
 lambda-src/
 lambda-src.zip
+layer-src.zip
+layer-src/
 
 # Terraform
 **/.terraform/
