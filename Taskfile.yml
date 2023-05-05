@@ -8,15 +8,31 @@ tasks:
     cmds:
       - terraform init
 
-  package-lambda:
-    desc: Package lambda zip file for deployment.
+  package-layer:
+    desc: Make Zip file containing the libraries the function will use.
     sources:
       - requirements.txt
+    generates:
+      - layer-src.zip
+    cmds:
+      - rm -f layer-src.zip
+      - mkdir -p layer-src/python/lib/python3.9/site-packages/
+      - pip install -r requirements.txt --target layer-src/python/lib/python3.9/site-packages/ --no-cache-dir
+      - |
+        cd layer-src \
+          && zip ../layer-src.zip -r . \
+          && cd .. \
+          && rm -r layer-src
+
+  package-lambda:
+    desc: Package lambda zip file for deployment.
+    deps:
+      - package-layer
+    sources:
       - src/**/*.py
     cmds:
       - rm -f lambda-src.zip
       - cp -R src lambda-src
-      - pip install -r requirements.txt --target lambda-src --no-cache-dir
       - |
         cd lambda-src \
             && zip ../lambda-src.zip -r . \
